@@ -2,7 +2,8 @@
 title: "Index"
 output: html_document
 ---
-Hello
+Welcome
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
