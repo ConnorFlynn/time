@@ -4,7 +4,7 @@ output: html_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
 ```
 
 ```{r}
@@ -49,5 +49,93 @@ d_times %>%
 
 ```
 
+```{r}
+# get libraries
+if (!require(librarian)){
+  install.packages("librarian")
+  library(librarian)
+}
+librarian::shelf(
+  bbest/clockify,
+  dplyr, DT, ggplot2,
+  quiet = TRUE)
+
+# CHANGE THESE VARIABLES!
+api_txt <-  "~/Documents/MEDS/EDS215/clockify_api_key.txt"
+project_name <- "crcm-science"
+
+# use API key to authenticate
+CLOCKIFY_API_KEY <- readLines(api_txt)
+set_api_key(CLOCKIFY_API_KEY)
+
+# get data
+d_times <- time_entries_all()
+# table(d_times$project_name) # confirm project_name
+d_times <- d_times %>%
+  filter(
+    project_name == !!project_name) %>%
+  select(
+    task_name, time_start, duration_hrs, 
+    user_name, description) %>% 
+  arrange(task_name, time_start)
+```
+
+## crcm-science {.tabset}
+
+### Overall
+```{r}
+plot_burndown(
+  d_times,
+  beg = as.Date("2021-10-01"), # day before
+  end = as.Date("2021-11-21"), # day after
+  hrs = 20)
+
+# table ALL
+datatable(d_times)
+```
+
+### 1. Literature Review
+```{r}
+task <- "Literature Review"
+d_task <- d_times %>% 
+  filter(task_name == !!task)
+plot_burndown(
+  d_task,
+  beg = as.Date("2021-10-02"), # day before
+  end = as.Date("2021-11-21"), # day after
+  hrs = 10)
+
+datatable(d_task)
+```
+### 2. Data Acquisition
+
+```{r}
+task <- "Data Acquisition"
+d_task <- d_times %>% 
+  filter(task_name == !!task)
+plot_burndown(
+  d_task,
+  beg = as.Date("2021-10-02"), # day before
+  end = as.Date("2021-11-21"), # day after
+  hrs = 10)
+
+datatable(d_task)
+```
+
+### 3. Model
+
+```{r}
+task <- "Model"
+d_task <- d_times %>% 
+  filter(task_name == !!task)
+plot_burndown(
+  d_task,
+  beg = as.Date("2021-10-01"), # day before
+  end = as.Date("2021-11-21"), # day after
+  hrs = 10)
+
+datatable(d_task)
+```
 
 
+Regarding our overall project, we slightly under budgeted our time. We accomplished the Literature Review task with excess time allotted for the task. We also completed the Data Acquisition task with excess time allotted for the task. However, we under budgeted the final modeling task. 
